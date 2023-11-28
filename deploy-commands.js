@@ -4,6 +4,7 @@ const path = require('node:path');
 
 require('dotenv').config();
 const clientId = process.env.clientId;
+const guildId = process.env.guildId;
 const token = process.env.token;
 
 const commands = [];
@@ -32,7 +33,7 @@ const rest = new REST().setToken(token);
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
 		const data = await rest.put(
-			Routes.applicationGuildCommands(clientId),
+			Routes.applicationGuildCommands(clientId, guildId),
 			{ body: commands },
 		);
 
