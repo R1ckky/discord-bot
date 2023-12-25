@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { Events } = require('discord.js');
 
-require('dotenv').config({ path: '../.env' });
+// require('dotenv').config({ path: '../.env' });
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 
 const sequelize = new Sequelize('database', 'user', 'password', {
@@ -27,88 +27,98 @@ const Tags = sequelize.define('tags', {
 	},
 });
 
-client.once(Events.ClientReady, readyClient => {
-	Tags.sync();
+module.exports = {
+	name: Events.ClientReady,
+	once: true,
+	execute(client) {
+		Tags.sync();
 
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
+		console.log(`Tags are synced for ${client.user.tag}`);
+	},
+};
 
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+// client.once(Events.ClientReady, readyClient => {
+// 	Tags.sync();
 
-	const { commandName } = interaction;
+// 	console.log(`Tags are synced for ${readyClient.user.tag}`);
+// });
 
-	if (commandName === 'addtag') {
-		const tagName = interaction.options.getString('name');
-		const tagDescription = interaction.options.getString('description');
+// client.on(Events.InteractionCreate, async interaction => {
+// 	if (!interaction.isChatInputCommand()) return;
 
-		try {
-			const tag = await Tags.create({
-				name: tagName,
-				description: tagDescription,
-				username: interaction.user.username,
-			});
+// 	const { commandName } = interaction;
 
-			return interaction.reply(`Tag ${tag.name} added.`);
-		}
-		catch (error) {
-			if (error.name === 'SequelizeUniqueConstraintError') {
-				return interaction.reply('That tag already exists.');
-			}
+// 	if (commandName === 'addtag') {
+// 		const tagName = interaction.options.getString('name');
+// 		const tagDescription = interaction.options.getString('description');
 
-			return interaction.reply('Something went wrong with adding a tag.');
-		}
-	}
-	else if (commandName === 'tag') {
-		const tagName = interaction.options.getString('name');
+// 		try {
+// 			const tag = await Tags.create({
+// 				name: tagName,
+// 				description: tagDescription,
+// 				username: interaction.user.username,
+// 			});
 
-		const tag = await Tags.findOne({ where: { name:tagName } });
+// 			return interaction.reply(`Tag ${tag.name} added.`);
+// 		}
+// 		catch (error) {
+// 			if (error.name === 'SequelizeUniqueConstraintError') {
+// 				return interaction.reply('That tag already exists.');
+// 			}
 
-		if (tag) {
-			tag.increment('usage_count');
+// 			return interaction.reply('Something went wrong with adding a tag.');
+// 		}
+// 	}
+// 	else if (commandName === 'tag') {
+// 		const tagName = interaction.options.getString('name');
 
-			return interaction.reply(tag.get('description'));
-		}
+// 		const tag = await Tags.findOne({ where: { name:tagName } });
 
-		return interaction.reply(`Could not find tag: ${tagName}`);
-	}
-	else if (commandName === 'edittag') {
-		const tagName = interaction.options.getString('name');
-		const tagDescription = interaction.options.getString('description');
+// 		if (tag) {
+// 			tag.increment('usage_count');
 
-		const affectedRows = await Tags.update({ description: tagDescription }, { where: { name: tagName } });
+// 			return interaction.reply(tag.get('description'));
+// 		}
 
-		if (affectedRows > 0) {
-			return interaction.reply(`Tag ${tagName} was edited.`);
-		}
+// 		return interaction.reply(`Could not find tag: ${tagName}`);
+// 	}
+// 	else if (commandName === 'edittag') {
+// 		const tagName = interaction.options.getString('name');
+// 		const tagDescription = interaction.options.getString('description');
 
-		return interaction.reply(`Could not find a tag with name ${tagName}.`);
-	}
-	else if (commandName === 'taginfo') {
-		const tagName = interaction.options.getString('name');
+// 		const affectedRows = await Tags.update({ description: tagDescription }, { where: { name: tagName } });
 
-		const tag = await Tags.findOne({ where: { name: tagName } });
+// 		if (affectedRows > 0) {
+// 			return interaction.reply(`Tag ${tagName} was edited.`);
+// 		}
 
-		if (tag) {
-			return interaction.reply(`${tagName} was created by ${tag.username} at ${tag.createdAt} and has been used ${tag.usage_count}`);
-		}
+// 		return interaction.reply(`Could not find a tag with name ${tagName}.`);
+// 	}
+// 	else if (commandName === 'taginfo') {
+// 		const tagName = interaction.options.getString('name');
 
-		return interaction.reply(`Could not find tag: ${tagName}`);
-	}
-	else if (commandName === 'showtags') {
-		const tagList = await Tags.findAll({ attributes: ['name'] });
-		const tagString = tagList.map(t => t.name).join(', ') || 'No tags set.';
+// 		const tag = await Tags.findOne({ where: { name: tagName } });
 
-		return interaction.reply(`List of tags: ${tagString}`);
-	}
-	else if (commandName === 'deletetag') {
-		const tagName = interaction.options.getString('name');
-		const rowCount = await Tags.destroy ({ where: { name : tagName } });
+// 		if (tag) {
+// 			return interaction.reply(`${tagName} was created by ${tag.username} at ${tag.createdAt} and has been used ${tag.usage_count}`);
+// 		}
 
-		if (!rowCount) return interaction.reply('That tag doesn\'t exist.');
+// 		return interaction.reply(`Could not find tag: ${tagName}`);
+// 	}
+// 	else if (commandName === 'showtags') {
+// 		const tagList = await Tags.findAll({ attributes: ['name'] });
+// 		const tagString = tagList.map(t => t.name).join(', ') || 'No tags set.';
 
-		return interaction.reply('Tag deleted.');
-	}
-});
+// 		return interaction.reply(`List of tags: ${tagString}`);
+// 	}
+// 	else if (commandName === 'deletetag') {
+// 		const tagName = interaction.options.getString('name');
+// 		const rowCount = await Tags.destroy ({ where: { name : tagName } });
 
-client.login(process.env.token);
+// 		if (!rowCount) return interaction.reply('That tag doesn\'t exist.');
+
+// 		return interaction.reply('Tag deleted.');
+// 	}
+// });
+
+// client.login(process.env.token);
