@@ -39,7 +39,7 @@ module.exports = {
 
 			if (!items.length || items.every(i => i.item_id === null)) return interaction.reply(`${target.globalName} has nothing!`);
 
-			return interaction.reply(`${target.globalName} currently has ${items.map(i => `${i.amount} ${i.item_id}`).join(', ')}`);
+			return interaction.reply(`${target.globalName} currently has ${items.map(i => `${i.item_id} x${i.amount} `).join(', ')}`);
 		}
 		catch (error) {
 			console.error('Error accessing inventory:', error.message);
