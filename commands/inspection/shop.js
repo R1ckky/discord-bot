@@ -9,6 +9,7 @@ module.exports = {
 	async execute(interaction) {
 		await userCreate(interaction.user.id);
 		const items = await CurrencyShop.findAll();
-		return interaction.reply(codeBlock(items.map(i => `${i.name}: ${i.cost}💰`).join('\n')));
+		return interaction.reply(codeBlock(items.map(i => `${i.name}: ${i.cost}💰 | Stock: ${i.stock > 0 ? i.stock : 'Out of Stock'}`).join('\n')));
+
 	},
 };
