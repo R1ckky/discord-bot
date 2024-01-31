@@ -29,7 +29,7 @@ module.exports = {
 		// 	return interaction.reply(`You currenty have ${getBalance(interaction.user.id)}💰, but the ${item.name} costs ${item.cost}!`);
 		// }
 
-		const user = await Users.findOne({ where: { user_id:  interaction.user.id } });
+		const user = await Users.findOne({ where: { user_id: interaction.user.id } });
 
 		const quantity = interaction.options.getInteger('quantity') || 1;
 
