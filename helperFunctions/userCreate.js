@@ -7,8 +7,6 @@ async function userCreate(userId) {
 	}
 
 	const user = currency.get(userId) || await Users.findOne({ where: { user_id: userId } });
-	// let userItems = await UserItems.findOne ({ where: { user_id: userId } });
-	// let items = await user.getItems();
 
 	if (!user) {
 		const newUser = await Users.create({ user_id: userId, balance: 1 });
@@ -22,13 +20,6 @@ async function userCreate(userId) {
 		// UserItems.set(id, newUser);
 	}
 
-	// if (!items) {
-	// 	items = await UserItems.create({
-	// 		user_id: null,
-	// 		item_id: null,
-	// 		amount: null,
-	// 	});
-	// }
 	return user;
 }
 

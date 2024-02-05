@@ -25,9 +25,6 @@ module.exports = {
 		const item = await CurrencyShop.findOne({ where: { name: { [Op.like]: itemName } } });
 
 		if (!item) return interaction.reply('That item doesn\'t exist.');
-		// if (item.cost > getBalance(interaction.user.id)) {
-		// 	return interaction.reply(`You currenty have ${getBalance(interaction.user.id)}💰, but the ${item.name} costs ${item.cost}!`);
-		// }
 
 		const user = await Users.findOne({ where: { user_id: interaction.user.id } });
 
